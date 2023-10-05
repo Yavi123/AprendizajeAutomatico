@@ -1,0 +1,7 @@
+primera columna
+renta media per capita en miles de euros
+
+media de los beneficios 
+
+abrir esto en jupyter
+
