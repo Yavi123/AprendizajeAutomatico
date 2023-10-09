@@ -11,8 +11,14 @@ def compute_cost(x, y, w, b):
 
     res = 0
 
-    for i in range(0, m):
-        res += (f_wb(w, b, x[i]) - y[i]) ** 2
+    fwb = np.multiply(x, w)
+    fwb = fwb + b
+
+    sumatorio = fwb - y
+
+    sumatorio = sumatorio ** 2
+
+    res = np.sum(sumatorio)
 
     total_cost = res / (2 * m)
 
