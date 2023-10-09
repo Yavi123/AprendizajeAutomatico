@@ -9,23 +9,17 @@ import math
 def compute_cost(x, y, w, b):    
     m = np.size(x)
 
-    res = 0
+    # Calcular las predicciones en Y
+    # Los valores que tendria Y si estuviese dentro de la recta de regresion
+    prediction = np.multiply(x, w) + b
 
-    fwb = np.multiply(x, w)
-    fwb = fwb + b
+    # Resultado del sumatorio de la diferencia de costes entre la prediccion y los puntos de referencia
+    res = np.sum((prediction - y)**2)
 
-    sumatorio = fwb - y
-
-    sumatorio = sumatorio ** 2
-
-    res = np.sum(sumatorio)
-
+    # Calcular la media de los costes, 2 para simplificar mas
     total_cost = res / (2 * m)
 
     return total_cost
-
-def f_wb(w, b, x):
-    return w * x + b
 
 
 #########################################################################
