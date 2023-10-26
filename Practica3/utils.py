@@ -2,6 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def load_data_multi():
+    data = np.loadtxt("data/ex2data1.txt", delimiter=',')
+    x = data[:,:-1]
+    y = data[:,-1]
+    return x, y
+
+
 def plot_data(X, y, pos_label="y=1", neg_label="y=0"):
     positive = y == 1
     negative = y == 0
