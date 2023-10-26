@@ -22,6 +22,7 @@ def compute_cost_test(target):
     print("\033[92mAll tests passed!")
 
 
+
 def compute_gradient_test(target):
     X_train, y_train, w_init, b_init = test_data()
 
@@ -37,6 +38,11 @@ def compute_gradient_test(target):
         dj_dw, target_dj_dw, rtol=1e-02), f"Case 1: dj_dw is wrong: {dj_dw} != {target_dj_dw}"
 
     print("\033[92mAll tests passed!")
+
+
+
+
+
 
 	
 def sklearn_linearmodel(X, Y):
