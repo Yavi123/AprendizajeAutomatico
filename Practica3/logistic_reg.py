@@ -49,32 +49,13 @@ def compute_gradient(X, y, w, b, lambda_=None):
     dj_db (float): The gradient of the cost w.r.t. the parameter b.
     dj_dw (ndarray): The gradient of the cost w.r.t. the parameters w.
     """
+    
     m = len(y)  # Number of examples
-
-    print("X = ")
-    print(X)
-
-    print("w = ")
-    print(w)
-
-    print("b = ")
-    print(b)
-
-
 
     # Calculate the logistic function
     z = np.dot(X, w) + b
 
-    print("z = ")
-    print(z)
-
     f_w_b = sigmoid(z)
-
-    print("f_w_b = ")
-    print(f_w_b)
-
-    print("y = ")
-    print(y)
 
     # Compute the gradients
     dj_db = (1 / m) * np.sum(f_w_b - y)

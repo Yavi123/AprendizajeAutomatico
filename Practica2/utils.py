@@ -13,5 +13,5 @@ def load_data():
 def load_data_multi():
     data = np.loadtxt("data/houses.txt", delimiter=',')
     x = data[:,:-1]
-    y = data[:,-1:]
+    y = data[:,-1]
     return x, y

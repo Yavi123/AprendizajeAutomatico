@@ -3,41 +3,35 @@ import copy
 import math
 
 
+# Normaliza los valores
 def zscore_normalize_features(x):
-    # """
-    # computes  X, zcore normalized by column
-
-    # Args:
-    #   X (ndarray (m,n))     : input data, m examples, n features
-
-    # Returns:
-    #   X_norm (ndarray (m,n)): input normalized by column
-    #   mu (ndarray (n,))     : mean of each feature
-    #   sigma (ndarray (n,))  : standard deviation of each feature
-    # """
 
     X_norm = np.zeros((np.size(x[:,:1]), np.size(x[1])), dtype='float32')
     mu =    np.zeros(np.size(x[1]), dtype='float32')
     sigma = np.zeros(np.size(x[1]), dtype='float32')
 
     for i in range(0, np.size(x[1])):
-        mu[i] = np.mean(x[:,i:i+1])
-        sigma[i] = np.std(x[:,i:i+1])
-        X_norm[:,i:i+1] = (x[:,i:i+1] - mu[i]) / sigma[i]
+        mu[i] = np.mean(x[:,i])
+        sigma[i] = np.std(x[:,i])
+        X_norm[:,i] = (x[:,i] - mu[i]) / sigma[i]
 
     return (X_norm, mu,sigma)
 
+
 def compute_cost(x, y, w, b):
 
-    m = len(y)  # Número de ejemplos
-    y_pred = np.dot(x, w) + b  # Predicciones del modelo
+    # n es el numero de variables en X
+    y_pred = np.dot(x, w) + b  # Predicciones del modelo, de tamaño (m, 1), un array de tamaño m
 
+    # m es el numero de ejemplos
+    m = len(y)
+    # aplicar formula
     cost = (1 / (2 * m)) * np.sum((y_pred - y) ** 2)
 
     return cost
 
 
-def compute_gradient(X, y, w, b):
+def compute_gradient(x, y, w, b):
     """
     Computes the gradient for linear regression 
     Args:
@@ -50,73 +44,66 @@ def compute_gradient(X, y, w, b):
       dj_dw : (ndarray Shape (n,)) The gradient of the cost w.r.t. the parameters w. 
     """
 
-    m = np.size(X[:, 0])
-    predictions = np.dot(X, w) + b  # Predicciones del modelo
+    # m es el numero de ejemplos
+    m = len(y)
 
-    # Compute the gradients
-    dj_db = (1/m) * np.sum(predictions - y)
-    dj_dw = (1/m) * np.dot(X.T, predictions - y)
+    # predictions devuelve uun array de tamaño m
+    predictions = np.dot(x, w) + b
 
+    # dj_dw devuelve uun array de tamaño n
+    # x.T tamaño (n, m)  &  predictions tamaño (m)
+    # Al hacer una multiplicacion vectorial, se queda en un array de tamaño (n,1 = n)
+    dj_dw = (1 / m) * np.dot(x.T, (predictions - y))
+
+    # dj_db devuelve un numero escalar
+    dj_db = (1 / m) * np.sum(predictions - y)
     return dj_db, dj_dw
 
 
 
 def gradient_descent(x, y, w_in, b_in, cost_function,
                      gradient_function, alpha, num_iters):
-    # Inicialización
+
+    """
+	Performs batch gradient descent to learn theta. Updates theta by taking 
+	num_iters gradient steps with learning rate alpha
+
+	Args:
+	  X : (array_like Shape (m,n)    matrix of examples 
+	  y : (array_like Shape (m,))    target value of each example
+	  w_in : (array_like Shape (n,)) Initial values of parameters of the model
+	  b_in : (scalar)                Initial value of parameter of the model
+	  cost_function: function to compute cost
+	  gradient_function: function to compute the gradient
+	  alpha : (float) Learning rate
+	  num_iters : (int) number of iterations to run gradient descent
+	Returns
+	  w : (array_like Shape (n,)) Updated values of parameters of the model
+	      after running gradient descent
+	  b : (scalar)                Updated value of parameter of the model 
+	      after running gradient descent
+	  J_history : (ndarray): Shape (num_iters,) J at each iteration,
+    	  primarily for graphing later
+    """
+
+    # w es de tamaño n, numero de variables en X
     w = w_in
+    # b es un numero escalar
     b = b_in
 
-    # Inicializar el array que almacenará los costes que se vayan calculando
+    # Inicializar el array que almacenara los costes que se vayan calculando
     # Todos sus elementos empiezan siendo 0
     J_history = np.zeros(num_iters)
 
-    # Número de puntos
-    m = len(y)
-
+    # Modificar w, b en cada iteracion utilizando la gradiente
     for i in range(num_iters):
 
-        # Guardar el coste de esta iteración
+        # Guardar el coste de esta iteracion
         J_history[i] = cost_function(x, y, w, b)
 
-        # Calcular los gradientes
-        dj_dw, dj_db = gradient_function(x, y, w, b)
+        b_gradient,w_gradient  = gradient_function(x,y,w,b)
 
-        # Asegúrate de que dj_dw y dj_db sean arrays numpy
-        dj_dw = np.array(dj_dw)
-        dj_db = np.array(dj_db)
-
-        # Cambiar w y b, para que se acerquen más a la recta real con cada iteración
-        w -= alpha * dj_dw
-        b -= alpha * dj_db
-
+        w -= alpha * w_gradient
+        b -= alpha * b_gradient
+	
     return w, b, J_history
-
-
-
-# def gradient_descent(x, y, w_in, b_in, cost_function,
-#                      gradient_function, alpha, num_iters):
-#     #Inicializacion
-#     w = w_in
-#     b = b_in
-
-#     # Inicializar el array que almacenara los costes que se vayan calculando
-#     # Todos sus elementos empiezan siendo 0
-#     J_history = np.zeros(num_iters)
-
-#     # Numero de puntos
-#     m = len(y)
-    
-#     for i in range(num_iters):
-
-#         # Guardar el coste de esta iteracion
-#         J_history[i] = cost_function(x, y, w, b)
-        
-#         # Calcular los gradientes
-#         dj_dw, dj_db = gradient_function(x, y, w, b)
-        
-#         # Cambiar w y b, para que se acerquen mas a la recta real con cada iteracion
-#         w -= alpha * dj_dw
-#         b -= alpha * dj_db
-    
-#     return w, b, J_history
