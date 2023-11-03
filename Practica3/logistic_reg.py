@@ -137,9 +137,31 @@ def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, 
 
     for i in range(num_iters):
         dj_db, dj_dw = gradient_function(X, y, w, b, lambda_)
+        
         w = w - alpha * dj_dw
         b = b - alpha * dj_db
+
         J_history[i] = cost_function(X, y, w, b, lambda_)
+
+    return w, b, J_history
+
+
+    #PRIMERA FORMA ANTES DEL REG
+    w = w_in.copy()
+    b = b_in
+    J_history = np.zeros(num_iters)  # Array to store cost at each iteration
+    
+    for i in range(num_iters):
+        # Compute cost and gradient using provided functions
+        cost = cost_function(X, y, w, b, lambda_)
+        dj_db, dj_dw = gradient_function(X, y, w, b, lambda_)
+        
+        # Update parameters
+        w -= alpha * dj_dw
+        b -= alpha * dj_db
+        
+        # Save the cost in J_history
+        J_history[i] = cost
 
     return w, b, J_history
 
@@ -162,4 +184,44 @@ def predict(X, w, b):
         The predictions for X using a threshold at 0.5
     """
 
+
+    # Predicciones en Y de todas las X que existen (en este caso examenes hechos)
+    # Multiplicando vectores de tamaño(m, n) y (n, 1) sale (m, 1)
+    # Predictions por lo tanto sera de tamaño m
+    predictions = np.dot(X, w) + b
+
+    # Ajustar a valores entre 0 y 1
+    s = sigmoid(predictions)
+
+    # Si esta por encima de la mitad, aprobado
+    p = (s >= 0.5)
+
     return p
+
+
+def predict_test(target):
+    np.random.seed(5)
+    b = 0.5    
+    w = np.random.randn(3)
+    X = np.random.randn(8, 3)
+    
+    result = target(X, w, b)
+    wrong_1 = [1., 1., 0., 0., 1., 0., 0., 1.]
+    expected_1 = [1., 1., 1., 0., 1., 0., 0., 1.]
+    if np.allclose(result, wrong_1):
+        raise ValueError("Did you apply the sigmoid before applying the threshold?")
+    assert result.shape == (len(X),), f"Wrong length. Expected : {(len(X),)} got: {result.shape}"
+    assert np.allclose(result, expected_1), f"Wrong output: Expected : {expected_1} got: {result}"
+    
+    b = -1.7    
+    w = np.random.randn(4) + 0.6
+    X = np.random.randn(6, 4)
+    
+    result = target(X, w, b)
+    expected_2 = [0., 0., 0., 1., 1., 0.]
+    assert result.shape == (len(X),), f"Wrong length. Expected : {(len(X),)} got: {result.shape}"
+    assert np.allclose(result,expected_2), f"Wrong output: Expected : {expected_2} got: {result}"
+
+    print('\033[92mAll tests passed!')
+
+predict_test(predict)
