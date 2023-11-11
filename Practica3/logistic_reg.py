@@ -11,7 +11,7 @@ def sigmoid(z):
 #########################################################################
 # logistic regression
 #
-def compute_cost(X, y, w, b, lambda_=None):
+def compute_cost(X, y, w, b, lambda_= 0):
     
     m = len(y)  # Number of examples
 
@@ -22,19 +22,13 @@ def compute_cost(X, y, w, b, lambda_=None):
     # Compute the cost
     term1 = -y * np.log(f_w_b)
     term2 = -(1 - y) * np.log(1 - f_w_b)
-    
-    # Regularization term (if lambda_ is provided)
-    if lambda_ is not None:
-        regularization_term = (lambda_ / (2 * m)) * np.sum(w**2)
-    else:
-        regularization_term = 0
 
-    total_cost = (1 / m) * np.sum(term1 + term2) + regularization_term
+    total_cost = (1 / m) * np.sum(term1 + term2)
     
     return total_cost
 
 
-def compute_gradient(X, y, w, b, lambda_=None):
+def compute_gradient(X, y, w, b, lambda_= 0):
     """
     Computes the gradient for logistic regression
 
@@ -61,10 +55,6 @@ def compute_gradient(X, y, w, b, lambda_=None):
     dj_db = (1 / m) * np.sum(f_w_b - y)
     dj_dw = (1 / m) * np.dot(X.T, (f_w_b - y))
 
-    # Regularization term (if lambda_ is provided)
-    if lambda_ is not None:
-        dj_dw += (lambda_ / m) * w
-
     return dj_db, dj_dw
 
 
@@ -83,16 +73,17 @@ def compute_cost_reg(X, y, w, b, lambda_=1):
     Returns:
       total_cost: (scalar)         cost 
     """
-    m , n = X.shape
-    sigmoid_output = sigmoid(np.dot(X, w) + b)
 
-    cost = -1/m * (np.dot(y,np.log(sigmoid_output)) + np.dot((1-y),np.log(1-sigmoid_output)))
+    cost = compute_cost(X, y, w, b)
 
-    reg_term = (lambda_ / (2*m)) * np.sum(w**2)
+    m = X.shape[0]
+    # Cacular el penalty con Regularization L2 (Ridge)
+    penaltyL2 = ( lambda_ / ( 2*m ) ) * np.sum(w**2)
 
-    total_cost = cost + reg_term
+    # Aplicar el penalty
+    cost += penaltyL2
 
-    return total_cost
+    return cost
 
 
 def compute_gradient_reg(X, y, w, b, lambda_=1):
@@ -111,13 +102,12 @@ def compute_gradient_reg(X, y, w, b, lambda_=1):
 
     """
 
+    # Calcular valores sin penalty, para aplicarselo despues
+    dj_db, dj_dw = compute_gradient(X, y, w, b)
+
+    # Sumar penalty
     m = len(y)
-    y_pred = sigmoid(np.dot(X, w) + b)
-
-    dj_dw = (1/m) * np.dot(X.T, (y_pred - y))
-    dj_db = (1/m) * np.sum(y_pred - y)
-
-    dj_dw = dj_dw + (lambda_ / m) * w
+    dj_dw += ((lambda_ / m) * w)
 
     return dj_db, dj_dw 
 
@@ -146,38 +136,20 @@ def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, 
     b : (scalar) Updated value of parameter of the model after running gradient descent.
     J_history : (ndarray): Shape (num_iters,) J at each iteration, primarily for graphing later.
     """
-    m, n = X.shape  # Number of examples and features
+
+    # Valores iniciales
     w = w_in
     b = b_in
     J_history = np.zeros(num_iters)
 
+    # Calculo de gradientes
     for i in range(num_iters):
-        dj_db, dj_dw = gradient_function(X, y, w, b, lambda_)
         
+        dj_db, dj_dw = gradient_function(X, y, w, b, lambda_)
         w = w - alpha * dj_dw
         b = b - alpha * dj_db
 
         J_history[i] = cost_function(X, y, w, b, lambda_)
-
-    return w, b, J_history
-
-
-    #PRIMERA FORMA ANTES DEL REG
-    w = w_in.copy()
-    b = b_in
-    J_history = np.zeros(num_iters)  # Array to store cost at each iteration
-    
-    for i in range(num_iters):
-        # Compute cost and gradient using provided functions
-        cost = cost_function(X, y, w, b, lambda_)
-        dj_db, dj_dw = gradient_function(X, y, w, b, lambda_)
-        
-        # Update parameters
-        w -= alpha * dj_dw
-        b -= alpha * dj_db
-        
-        # Save the cost in J_history
-        J_history[i] = cost
 
     return w, b, J_history
 
@@ -239,5 +211,3 @@ def predict_test(target):
     assert np.allclose(result,expected_2), f"Wrong output: Expected : {expected_2} got: {result}"
 
     print('\033[92mAll tests passed!')
-
-predict_test(predict)

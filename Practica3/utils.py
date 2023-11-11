@@ -18,7 +18,7 @@ def load_data_multi_data2_separatedValues():
     data = np.loadtxt("data/ex2data2.txt", delimiter=',')
     x1 = data[:,0]
     x2 = data[:,1]
-    y = data[:,-1]
+    y = data[:,2]
     return x1, x2, y
 
 
