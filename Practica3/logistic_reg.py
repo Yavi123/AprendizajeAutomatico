@@ -83,6 +83,14 @@ def compute_cost_reg(X, y, w, b, lambda_=1):
     Returns:
       total_cost: (scalar)         cost 
     """
+    m , n = X.shape
+    sigmoid_output = sigmoid(np.dot(X, w) + b)
+
+    cost = -1/m * (np.dot(y,np.log(sigmoid_output)) + np.dot((1-y),np.log(1-sigmoid_output)))
+
+    reg_term = (lambda_ / (2*m)) * np.sum(w**2)
+
+    total_cost = cost + reg_term
 
     return total_cost
 
@@ -103,7 +111,15 @@ def compute_gradient_reg(X, y, w, b, lambda_=1):
 
     """
 
-    return dj_db, dj_dw
+    m = len(y)
+    y_pred = sigmoid(np.dot(X, w) + b)
+
+    dj_dw = (1/m) * np.dot(X.T, (y_pred - y))
+    dj_db = (1/m) * np.sum(y_pred - y)
+
+    dj_dw = dj_dw + (lambda_ / m) * w
+
+    return dj_db, dj_dw 
 
 
 #########################################################################

@@ -2,11 +2,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def load_data_multi():
+def load_data_multi_data1():
     data = np.loadtxt("data/ex2data1.txt", delimiter=',')
     x = data[:,:-1]
     y = data[:,-1]
     return x, y
+
+def load_data_multi_data2():
+    data = np.loadtxt("data/ex2data2.txt", delimiter=',')
+    x = data[:,:-1]
+    y = data[:,-1]
+    return x, y
+
+def load_data_multi_data2_separatedValues():
+    data = np.loadtxt("data/ex2data2.txt", delimiter=',')
+    x1 = data[:,0]
+    x2 = data[:,1]
+    y = data[:,-1]
+    return x1, x2, y
 
 
 def plot_data(X, y, pos_label="y=1", neg_label="y=0"):
