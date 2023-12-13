@@ -41,25 +41,22 @@ def cost(theta1, theta2, X, y, lambda_):
 
 	return J
 
-def forward(theta_list, a_in):
-	m = a_in.shape[0]
-	a_in = np.hstack([np.ones((m, 1)), a_in])
-	activations = [a_in]
+def forward(theta_list, input):
+	m = input.shape[0]
+	input = np.hstack([np.ones((m, 1)), input])
+	activationValues = [input]
 	zs = []
 
 	for i in range(len(theta_list)):
-		z = np.dot(activations[-1], theta_list[i].T)
+		zs.append(np.dot(activationValues[-1], theta_list[i].T))
 
-		# Calcular el sig
-		a = 1 / (1 + np.exp(-z))
+		activationValues.append(1 / (1 + np.exp(-zs[i])))
 
 		if (i < len(theta_list) - 1):
-			a = np.hstack([np.ones((m, 1)), a])
+			activationValues[i] = np.hstack([np.ones((m, 1)), activationValues[i]])
 
-		activations.append(a)
-		zs.append(z)
 
-	return activations, zs
+	return activationValues, zs
 
 def costL2(theta_list, X, y, lambda_):
 	
@@ -151,7 +148,6 @@ def backprop(theta1, theta2, X, y, lambda_):
 	"""
 	theta_list = [theta1, theta2]
 	m = X.shape[0]
-	n_labels = theta2.shape[0]
 
 	activations, zs = forward(theta_list, X)
 	a_last = activations[-1]
