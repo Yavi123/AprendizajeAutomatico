@@ -58,6 +58,17 @@ def forward(theta_list, input):
 
 	return activationValues, zs
 
+def iterateThetas(theta1, theta2, X, Y, iterations, myLambda, myAlpha):
+
+	# Utilizar los gradientes para ir modificando los thetas en cada iteracion
+	for iteration in range(iterations):
+		# Calcular los gradientes 
+		cost, g1, g2 = backprop(theta1, theta2, X, Y, myLambda)
+		theta1 -= myAlpha * g1
+		theta2 -= myAlpha * g2
+	
+	return theta1, theta2
+
 def costL2(theta_list, X, y, lambda_):
 	
 	"""
