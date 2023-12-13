@@ -33,31 +33,31 @@ def cost(theta1, theta2, X, y, lambda_):
 	  
 	m = len(y)
 	
-	neuronValues, zs = forward(theta1, theta2, X)
-	predictions = neuronValues[-1]
+	activations, zs = forward([theta1, theta2], X)
+	predictions = activations[-1]
 	
 	J = (-1 / m) * np.sum(y * np.log(predictions) + (1 - y) * np.log(1 - predictions))
 
 
 	return J
 
-def forward(theta1, theta2, input):
-	m = input.shape[0]
-	input = np.hstack([np.ones((m, 1)), input])
-	activations = [input]
+def forward(theta_list, a_in):
+	m = a_in.shape[0]
+	a_in = np.hstack([np.ones((m, 1)), a_in])
+	activations = [a_in]
 	zs = []
 
-	zs.append(np.dot(activations[-1], theta1.T))
-	
-	a = 1 / (1 + np.exp(-zs[0]))
-	a = np.hstack([np.ones((m, 1)), a])
-	activations.append(a)
+	for i in range(len(theta_list)):
+		z = np.dot(activations[-1], theta_list[i].T)
 
+		# Calcular el sig
+		a = 1 / (1 + np.exp(-z))
 
-	zs.append(np.dot(activations[-1], theta2.T))
+		if (i < len(theta_list) - 1):
+			a = np.hstack([np.ones((m, 1)), a])
 
-	a = 1 / (1 + np.exp(-zs[1]))
-	activations.append(a)
+		activations.append(a)
+		zs.append(z)
 
 	return activations, zs
 
@@ -107,7 +107,7 @@ def costL2(theta_list, X, y, lambda_):
 
 	return J
 
-def sigmoid(z):
+def sig(z):
 	return 1/(1+np.exp(-z))
 
 def backprop(theta1, theta2, X, y, lambda_):
@@ -161,7 +161,7 @@ def backprop(theta1, theta2, X, y, lambda_):
 	deltas = [a_last - y]
 	for i in range(len(theta_list) - 1, 0, -1):
 		# Calcular el gradiente
-		sigGrad = sigmoid(zs[i - 1]) * (1 - sigmoid(zs[i - 1]))
+		sigGrad = sig(zs[i - 1]) * (1 - sig(zs[i - 1]))
 		delta = np.dot(deltas[0], theta_list[i][:, 1:]) * sigGrad
 		deltas.insert(0, delta)
 
