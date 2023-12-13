@@ -48,12 +48,14 @@ def forward(theta_list, input):
 	zs = []
 
 	for i in range(len(theta_list)):
-		zs.append(np.dot(activationValues[-1], theta_list[i].T))
+		z = np.dot(activationValues[-1], theta_list[i].T)
 
 		activationValues.append(1 / (1 + np.exp(-zs[i])))
 
 		if (i < len(theta_list) - 1):
 			activationValues[i] = np.hstack([np.ones((m, 1)), activationValues[i]])
+
+		zs.append(z)
 
 
 	return activationValues, zs
