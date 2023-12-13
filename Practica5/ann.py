@@ -50,12 +50,13 @@ def forward(theta_list, input):
 	for i in range(len(theta_list)):
 		z = np.dot(activationValues[-1], theta_list[i].T)
 
-		activationValues.append(1 / (1 + np.exp(-zs[i])))
+		layerValues = 1 / (1 + np.exp(-zs[i]))
 
 		if (i < len(theta_list) - 1):
-			activationValues[i] = np.hstack([np.ones((m, 1)), activationValues[i]])
+			layerValues = np.hstack([np.ones((m, 1)), layerValues])
 
 		zs.append(z)
+		activationValues.append(layerValues)
 
 
 	return activationValues, zs
