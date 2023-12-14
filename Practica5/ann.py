@@ -78,19 +78,15 @@ def backprop(theta1, theta2, X, y, lambda_):
 	# Calcular los valores de las capas
 	layerValues, weighted_inputs = forwardprop(weights, X)
 
-	# Diferencia entre la capa de salida y los valores reales de salida
-	deltas = [layerValues[-1] - y]
-	for i in reversed(range(1, len(weights))):
-		# Calcular el gradiente
-		sigGrad = sigmoid(weighted_inputs[i - 1]) * (1 - sigmoid(weighted_inputs[i - 1]))
-		delta = np.dot(deltas[0], weights[i][:, 1:]) * sigGrad
-		deltas.insert(0, delta)
+	# Calcular los Delta
+	deltaA3 = layerValues[-1] - y
+	deltaA2 = np.dot(deltaA3, theta2[:, 1:]) * (sigmoid(weighted_inputs[-2]) * (1 - sigmoid(weighted_inputs[-2])))
 
-	# Calcular gradientes sin regularizacion
-	grad1 = np.dot(deltas[0].T, layerValues[0]) / m
-	grad2 = np.dot(deltas[1].T, layerValues[1]) / m
+	# Calcular los gradientes dependiendo de los delta calculados anteriormente
+	grad2 = (1/m) * np.dot(deltaA3.T, layerValues[-2])
+	grad1 = (1/m) * np.dot(deltaA2.T, layerValues[-3])
 
-	# Aplicar/Sumar regularizacion
+	# # Aplicar/Sumar regularizacion
 	grad1[:, 1:] += (lambda_ / m) * theta1[:, 1:]
 	grad2[:, 1:] += (lambda_ / m) * theta2[:, 1:]
 
@@ -106,7 +102,7 @@ def iterateThetas(theta1, theta2, X, Y, iterations, myLambda, myAlpha):
 	for iteration in range(iterations):
 		# Calcular los gradientes 
 		cost_J, g1, g2 = backprop(theta1, theta2, X, Y, myLambda)
-		theta1 -= myAlpha * g1
-		theta2 -= myAlpha * g2
+		theta1 -= g1 * myAlpha
+		theta2 -= g2 * myAlpha
 	
 	return theta1, theta2
