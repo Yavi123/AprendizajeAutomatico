@@ -182,7 +182,7 @@ public class MLAgent : MonoBehaviour
         float[] result = new float[values.Length];
         for (int i = 0; i < values.Length; i++)
         {
-            result[i] = float.Parse(values[i]);
+            result[i] = float.Parse(values[i], System.Globalization.CultureInfo.InvariantCulture);
         }
         return result;
     }
