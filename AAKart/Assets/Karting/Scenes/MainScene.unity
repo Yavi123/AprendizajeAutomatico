@@ -15844,7 +15844,7 @@ MonoBehaviour:
   - ray4
   - ray5
   snapshotTime: 0.1
-  csvOutput: ML/Kart.csv
+  csvOutput: ML/data/Kart05.csv
   saveWhenFinish: 1
 --- !u!1001 &1687223860
 PrefabInstance:
@@ -18095,7 +18095,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1910917296}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 05ee481059e048e439f5fdf43f3e9d67, type: 3}
   m_Name: 
