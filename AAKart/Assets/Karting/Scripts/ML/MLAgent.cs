@@ -65,6 +65,9 @@ public class MLPModel
         Debug.Log("input " + input.Length);
 
         //TODO: implement feedworward.
+
+
+
         //the size of the output layer depends on what actions you have performed in the game.
         //By default it is 7 (number of possible actions) but some actions may not have been performed and therefore the model has assumed that they do not exist.
         return new float[7];

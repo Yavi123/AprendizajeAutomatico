@@ -1,32 +1,61 @@
 import numpy as np
 
-def cost(theta1, theta2, X, y, lambda_):
+# def cost(theta1, theta2, X, y, lambda_):
 	  
-	m = len(y)
+# 	m = len(y)
 
-	# Calcular los valores de las capas
-	layerValues, weighted_inputs = forwardprop([theta1, theta2], X)
+# 	# Calcular los valores de las capas
+# 	layerValues, weighted_inputs = forwardprop([theta1, theta2], X)
 	
-	# Calcular costes
-	layerSum = (1 - y) * np.log(1 - layerValues[-1])
-	sum = np.sum(y * np.log(layerValues[-1]) + layerSum)
-	cost_J = (-1 / m) * sum
+# 	# Calcular costes
+# 	layerSum = (1 - y) * np.log(1 - layerValues[-1])
+# 	sum = np.sum(y * np.log(layerValues[-1]) + layerSum)
+# 	cost_J = (-1 / m) * sum
 
-	return cost_J
+# 	return cost_J
+
+def cost(thetas, X, y):
+    """
+    Compute the cost for a neural network.
+
+    Parameters
+    ----------
+    theta_list : list of array_like
+        List of weight matrices for each layer in the neural network.
+        Each matrix has shape (number of units in current layer x number of units in previous layer + 1).
+    X : array_like
+        Input data with shape (number of examples x number of features).
+    y : array_like
+        1-hot encoding of labels for the input, having shape 
+        (number of examples x number of classes).
+
+    Returns
+    -------
+    J : float
+        The computed value for the cost function.
+    """
+    
+    m = len(y)
+    activations, zs = forwardprop(thetas, X)
+    predictions = activations[-1]
+    
+    J = (-1 / m) * np.sum(y * np.log(predictions) + (1 - y) * np.log(1 - predictions))
+    
+    return J
 
 
-def costL2(weights_list, X, y, lambda_):
+def costL2(thetas, X, y, lambda_):
 	
 	m = len(y)
 
 	#Calcular coste
-	cost_J = cost(weights_list[0], weights_list[1], X, y, lambda_)
+	cost_J = cost(thetas, X, y)
 
 	# Calcular el coste regularizado
-	thetasSum = np.zeros(len(weights_list[0]))
+	thetasSum = np.zeros(len(thetas[0]))
 	# Calcular regularizacion
-	for i in range(2):
-		thetasSum[i] = np.sum(weights_list[i][:, 1:]**2)
+	for i in range(len(thetas)):
+		thetasSum[i] = np.sum(thetas[i][:, 1:]**2)
 	reg = (lambda_ / (2 * m)) * np.sum(thetasSum)
 
 	# Aplicar regularizacion
