@@ -79,7 +79,7 @@ public class MLPModel
     public Labels ConvertIndexToLabel(int index)
     {
         //TODO: implement the conversion from index to actions.
-        return Labels.NONE;
+        return Labels.ACCELERATE;
     }
 
     public Labels Predict(float[] output)

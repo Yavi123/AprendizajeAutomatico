@@ -104,10 +104,14 @@ def checkNNGradients(costNN, reg_param=0):
     # Unroll parameters
     # nn_params = np.append(Theta1, Theta2).reshape(-1)
 
+    # # Compute Gradient
+    # cost, grad1, grad2 = costNN([Theta1, Theta2],
+    #                             X, ys, reg_param)
+    # grad = np.concatenate((np.ravel(grad1), np.ravel(grad2)))
+        
     # Compute Gradient
-    cost, grad1, grad2 = costNN(Theta1, Theta2,
+    cost, grad = costNN([Theta1, Theta2],
                                 X, ys, reg_param)
-    grad = np.concatenate((np.ravel(grad1), np.ravel(grad2)))
 
     def reduced_cost_func(p):
         """ Cheaply decorated nnCostFunction """
@@ -117,7 +121,7 @@ def checkNNGradients(costNN, reg_param=0):
         Theta2 = np.reshape(
             p[hidden_layer_size * (input_layer_size + 1):],
             (num_labels, (hidden_layer_size + 1)))
-        return costNN(Theta1, Theta2,
+        return costNN([Theta1, Theta2],
                         X, ys, reg_param)[0]
 
     numgrad = computeNumericalGradient(reduced_cost_func, Theta1, Theta2)
