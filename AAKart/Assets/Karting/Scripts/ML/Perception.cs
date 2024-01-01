@@ -33,12 +33,7 @@ public class Perception : MonoBehaviour
         // if you know start will always be normalized, can skip this step
         start.Normalize();
 
-        Vector3 axis = Vector3.Cross(start, Vector3.right);
-
-        // handle case where start is colinear with up
-        if (axis == Vector3.zero) axis = Vector3.right;
-
-        return Quaternion.AngleAxis(angle, axis) * start;
+        return Quaternion.AngleAxis(angle, transform.up) * start;
     }
 
     // Update is called once per frame

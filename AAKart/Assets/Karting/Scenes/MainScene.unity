@@ -15833,7 +15833,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b54459dca25cfd947aa2a536fafe9c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  recordMode: 1
+  recordMode: 0
   perception: {fileID: 1910917298}
   kart: {fileID: 1304724376}
   keyboardInput: {fileID: 1304724378}
@@ -18095,7 +18095,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1910917296}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 05ee481059e048e439f5fdf43f3e9d67, type: 3}
   m_Name: 
