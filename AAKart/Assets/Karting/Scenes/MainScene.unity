@@ -18100,9 +18100,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ee481059e048e439f5fdf43f3e9d67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: {fileID: 0}
+  text: {fileID: 4900000, guid: 66e70d3c114992542928442146c2dbb7, type: 3}
   model: 0
-  agentEnable: 0
+  agentEnable: 1
 --- !u!1001 &1931383003
 PrefabInstance:
   m_ObjectHideFlags: 0

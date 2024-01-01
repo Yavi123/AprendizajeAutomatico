@@ -62,7 +62,7 @@ public class MLPModel
     {
         Parameters parameters = Record.ReadParameters(8, Time.timeSinceLevelLoad, p, transform);
         float[] input=parameters.ConvertToFloatArrat();
-        Debug.Log("input " + input.Length);
+        //Debug.Log("input " + input.Length);
 
         //TODO: implement feedworward.
 
@@ -82,7 +82,8 @@ public class MLPModel
     public Labels ConvertIndexToLabel(int index)
     {
         //TODO: implement the conversion from index to actions.
-        return Labels.ACCELERATE;
+        Debug.Log(index);
+        return Labels.NONE;
     }
 
     public Labels Predict(float[] output)
@@ -236,7 +237,7 @@ public class MLAgent : MonoBehaviour
                             else
                             {
                                 coefficient = false;
-                                mlpParameters.CreateIntercept(currentParameter, currentDimension[1]);
+                                mlpParameters.CreateIntercept(currentParameter, currentDimension[0]);
                             }
 
                         }

@@ -2,6 +2,7 @@ from skl2onnx import to_onnx
 from onnx2json import convert
 import pickle
 import json
+import numpy as np
 
 
 def ExportONNX_JSON_TO_Custom(onnx_json,mlp):
@@ -35,3 +36,39 @@ def ExportAllformatsMLPSKlearn(mlp,X,picklefileName,onixFileName,jsonFileName,cu
     customFormat = ExportONNX_JSON_TO_Custom(onnx_json,mlp)
     with open(customFileName, 'w') as f:
         f.write(customFormat)
+
+def CreateTxt(thetas, file):
+    with open(file, 'w') as f:
+        num_layers = len(thetas)
+        f.write(f"num_layers:{num_layers + 1}\n")
+
+        parameter_num = 0
+        for layer_num, theta in enumerate(thetas):
+
+            for param_type, param_values in [('coefficient', theta[:, 1:]), ('intercepts', theta[:, 0])]:
+                dims = list(map(str, param_values.shape))
+                f.write(f"parameter:{parameter_num}\n")
+                f.write(f"dims:{dims}\n")
+                f.write(f"name:{param_type}\n")
+                f.write(f"values:{param_values.flatten().tolist()}\n")
+            parameter_num += 1
+
+
+
+def ExportThetasToFile(thetaList, file):
+    s= "num_layers:"+str(len(thetaList))+"\n"
+    
+    parameterIndex = 0
+    for i in range(len(thetaList)):
+        s += "parameter:"+str(i)+"\n"
+        
+        s += "dims:"+str(list(map(str, thetaList[i].shape)))+"\n"
+        
+        s += "name:coefficient"+"\n"
+        
+        s += "values:"+str(thetaList[i].flatten())+"\n"
+        
+        parameterIndex += 1
+
+    with open(file, 'w') as f:
+        f.write(s)
