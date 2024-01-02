@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -42,6 +43,16 @@ public class MLPParameters
     {
         intercepts[i][row] = v;
     }
+
+    public List<float[,]> GetCoefficients()
+    {
+        return coeficients;
+    }
+
+    public List<float[]> GetIntercepts()
+    {
+        return intercepts;
+    }
 }
 
 public class MLPModel
@@ -61,17 +72,66 @@ public class MLPModel
     public float[] FeedForward(Perception p, Transform transform)
     {
         Parameters parameters = Record.ReadParameters(8, Time.timeSinceLevelLoad, p, transform);
-        float[] input=parameters.ConvertToFloatArrat();
+        float[] input = parameters.ConvertToFloatArrat();
         //Debug.Log("input " + input.Length);
 
-        //TODO: implement feedworward.
+        // Ignorar parametros que no nos interesa
+        float[] cleanInput = new float[7];
+        int cleanInputIndex = 0;
+        for (int i = 0; i < input.Length; i++)
+            if (!(i == 6 || i == 8))
+            {
+                cleanInput[cleanInputIndex] = input[i];
+                cleanInputIndex++;
+            }
 
 
-
-        //the size of the output layer depends on what actions you have performed in the game.
-        //By default it is 7 (number of possible actions) but some actions may not have been performed and therefore the model has assumed that they do not exist.
-        return new float[7];
+        return FeedForwardLogic(cleanInput);
     }
+
+
+    public float[] FeedForwardLogic(float[] inputs)
+    {
+        List<float[,]> coefficients = mlpParameters.GetCoefficients();
+        List<float[]> intercepts = mlpParameters.GetIntercepts();
+
+        if (inputs.Length != coefficients[0].GetLength(1))
+            return new float[coefficients[coefficients.Count-1].GetLength(0)];
+
+
+        float[] currentLayerOutput = inputs;
+
+        // Loop a través de las capas
+        for (int layerIndex = 0; layerIndex < coefficients.Count; layerIndex++)
+        {
+            float[] layerOutput = new float[coefficients[layerIndex].GetLength(0)];
+
+            // Loop a través de las neuronas de la capa actual
+            for (int neuronIndex = 0; neuronIndex < coefficients[layerIndex].GetLength(0); neuronIndex++)
+            {
+                float weightedSum = intercepts[layerIndex][neuronIndex]; // Sesgo
+
+                // Loop a través de las entradas y sus pesos
+                for (int inputIndex = 0; inputIndex < coefficients[layerIndex].GetLength(1); inputIndex++)
+                {
+                    weightedSum += currentLayerOutput[inputIndex] * coefficients[layerIndex][neuronIndex, inputIndex];
+                }
+
+                // Aplicar función de activación sigmoidal
+                layerOutput[neuronIndex] = ActivationFunction(weightedSum);
+            }
+
+            currentLayerOutput = layerOutput; // La salida de esta capa se convierte en la entrada para la siguiente
+        }
+
+        return currentLayerOutput; // La salida final después de todas las capas
+    }
+
+    private float ActivationFunction(float x)
+    {
+        return 1.0f / (1.0f + (float)Math.Exp(-x));
+    }
+
 
     /// <summary>
     /// Implements the conversion of the output value to the action label. 
@@ -82,8 +142,33 @@ public class MLPModel
     public Labels ConvertIndexToLabel(int index)
     {
         //TODO: implement the conversion from index to actions.
-        Debug.Log(index);
-        return Labels.NONE;
+
+        switch (index)
+        {
+            case 0:
+                return Labels.ACCELERATE;
+
+            case 1:
+                return Labels.BRAKE;
+
+            case 2:
+                return Labels.LEFT_ACCELERATE;
+
+            case 3:
+                return Labels.LEFT_BRAKE;
+
+            case 4:
+                return Labels.NONE;
+
+            case 5:
+                return Labels.RIGHT_ACCELERATE;
+
+            case 6:
+                return Labels.RIGHT_BRAKE;
+
+            default:
+                return Labels.NONE;
+        }
     }
 
     public Labels Predict(float[] output)
@@ -151,6 +236,8 @@ public class MLAgent : MonoBehaviour
                 break;
         }
         KartGame.KartSystems.InputData input = Record.ConvertLabelToInput(label);
+
+        Debug.Log("label = " + label);
         return input;
     }
 
