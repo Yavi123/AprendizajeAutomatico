@@ -75,15 +75,33 @@ public class MLPModel
         float[] input = parameters.ConvertToFloatArrat();
         //Debug.Log("input " + input.Length);
 
+        bool droppingPosition = true;
+
         // Ignorar parametros que no nos interesa
-        float[] cleanInput = new float[7];
+        float[] cleanInput;
+        if (!droppingPosition) cleanInput= new float[7];
+        else cleanInput= new float[5];
+
         int cleanInputIndex = 0;
         for (int i = 0; i < input.Length; i++)
-            if (!(i == 6 || i == 8))
+        {
+            if (!droppingPosition)
             {
-                cleanInput[cleanInputIndex] = input[i];
-                cleanInputIndex++;
+                if (!(i == 6 || i == 8))
+                {
+                    cleanInput[cleanInputIndex] = input[i];
+                    cleanInputIndex++;
+                }
             }
+            else
+            {
+                if (!(i == 5 || i == 6 || i == 7 || i == 8))
+                {
+                    cleanInput[cleanInputIndex] = input[i];
+                    cleanInputIndex++;
+                }
+            }
+        }
 
 
         return FeedForwardLogic(cleanInput);
