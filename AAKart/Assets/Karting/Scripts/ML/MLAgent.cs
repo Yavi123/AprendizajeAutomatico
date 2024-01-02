@@ -69,23 +69,21 @@ public class MLPModel
     /// </summary>
     /// <param name="p">The Agent perception</param>
     /// <returns>The action label</returns>
-    public float[] FeedForward(Perception p, Transform transform)
+    public float[] FeedForward(Perception p, Transform transform, bool usingPosition)
     {
         Parameters parameters = Record.ReadParameters(8, Time.timeSinceLevelLoad, p, transform);
         float[] input = parameters.ConvertToFloatArrat();
         //Debug.Log("input " + input.Length);
 
-        bool droppingPosition = true;
-
         // Ignorar parametros que no nos interesa
         float[] cleanInput;
-        if (!droppingPosition) cleanInput= new float[7];
+        if (usingPosition) cleanInput= new float[7];
         else cleanInput= new float[5];
 
         int cleanInputIndex = 0;
         for (int i = 0; i < input.Length; i++)
         {
-            if (!droppingPosition)
+            if (usingPosition)
             {
                 if (!(i == 6 || i == 8))
                 {
@@ -216,13 +214,18 @@ public class MLPModel
 
 public class MLAgent : MonoBehaviour
 {
-    public enum ModelType { MLP=0 }
-    public TextAsset text;
+    public enum ModelType { MLP=0, KNN=1 }
     public ModelType model;
+    public bool usingPositions;
+    public TextAsset MLPText;
+    public TextAsset KNNText;
     public bool agentEnable;
 
     private MLPParameters mlpParameters;
     private MLPModel mlpModel;
+
+    private KNNModel kNNModel;
+
     private Perception perception;
 
     // Start is called before the first frame update
@@ -230,11 +233,16 @@ public class MLAgent : MonoBehaviour
     {
         if (agentEnable)
         {
-            string file = text.text;
+            string file = MLPText.text;
             if (model == ModelType.MLP)
             {
-                mlpParameters = LoadParameters(file);
+                mlpParameters = LoadParameters(MLPText.text);
                 mlpModel = new MLPModel(mlpParameters);
+            }
+            else if (model == ModelType.KNN)
+            {
+                kNNModel = new KNNModel();
+                kNNModel.LoadParameters(KNNText.text, usingPositions);
             }
             Debug.Log("Parameters loaded " + mlpParameters);
             perception = GetComponent<Perception>();
@@ -249,8 +257,11 @@ public class MLAgent : MonoBehaviour
         switch (model)
         {
             case ModelType.MLP:
-                float[] outputs = this.mlpModel.FeedForward(perception,this.transform);
+                float[] outputs = this.mlpModel.FeedForward(perception,this.transform, usingPositions);
                 label = this.mlpModel.Predict(outputs);
+                break;
+            case ModelType.KNN:
+                label = kNNModel.Predict(perception, this.transform);
                 break;
         }
         KartGame.KartSystems.InputData input = Record.ConvertLabelToInput(label);
