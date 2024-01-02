@@ -209,7 +209,7 @@ public class Record : MonoBehaviour
         if(saveWhenFinish && recordMode)
         {
             string csvFormat = ConvertToCSV(parametersName, parameters, labels);
-            File.WriteAllText(csvOutput, csvFormat);
+            File.WriteAllText(csvOutput, File.ReadAllText(csvOutput) + csvFormat);
             Debug.Log("File "+ csvOutput + " save");
         }
     }
@@ -217,12 +217,14 @@ public class Record : MonoBehaviour
     public static string ConvertToCSV(string[] parametersName,List<Parameters> parameters,List<Labels> labels)
     {
         string csv = "";
+        /*
         for(int i = 0; i < parametersName.Length; i++)
         {
             csv += parametersName[i] + ",";
         }
         csv += "time,";
         csv += "action\n";
+        */
 
         for (int i = 0; i < parameters.Count; i++)
         {
