@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 
 public class MLPParameters
@@ -101,8 +102,26 @@ public class MLPModel
             }
         }
 
+        return FeedForwardLogic(NormalizeInput(cleanInput));
+    }
 
-        return FeedForwardLogic(cleanInput);
+    //Normalizamos el input, para que sean valores parecidos a los con los que se entrenó
+    float[] NormalizeInput(float[] input)
+    {
+        float[] normalized = new float[input.Length];
+
+        // Calcular la media y la desviación estándar para cada columna
+        float mean = input.Sum() / input.Length;
+
+        float sumOfSquaresOfDifferences = input.Select(val => Mathf.Pow((val - mean), 2)).Sum();
+        float stdDev = Mathf.Sqrt(sumOfSquaresOfDifferences / input.Length);
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            normalized[i] = (input[i] - mean) / stdDev;
+        }
+
+        return normalized;
     }
 
 
@@ -133,7 +152,7 @@ public class MLPModel
                     weightedSum += currentLayerOutput[inputIndex] * coefficients[layerIndex][neuronIndex, inputIndex];
                 }
 
-                // Aplicar función de activación sigmoidal
+                // Aplicar función de activación
                 layerOutput[neuronIndex] = ActivationFunction(weightedSum);
             }
 
@@ -143,6 +162,7 @@ public class MLPModel
         return currentLayerOutput; // La salida final después de todas las capas
     }
 
+    // En este caso la sigmoidal
     private float ActivationFunction(float x)
     {
         return 1.0f / (1.0f + (float)Math.Exp(-x));
@@ -244,7 +264,6 @@ public class MLAgent : MonoBehaviour
                 kNNModel = new KNNModel();
                 kNNModel.LoadParameters(KNNText.text, usingPositions);
             }
-            Debug.Log("Parameters loaded " + mlpParameters);
             perception = GetComponent<Perception>();
         }
     }
@@ -266,7 +285,6 @@ public class MLAgent : MonoBehaviour
         }
         KartGame.KartSystems.InputData input = Record.ConvertLabelToInput(label);
 
-        Debug.Log("label = " + label);
         return input;
     }
 
